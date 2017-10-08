@@ -1,14 +1,13 @@
 const Sequelize = require('sequelize');
 const express = require('express');
 const bodyParser = require('body-parser')
+require('dotenv').config()
 
 const app = express();
 const util = require('./util');
-const dburl = 'mysql://root:password@localhost/growth_notes?useUnicode=yes&characterEncoding=UTF-8&timezone=+0800';
-
-app.use(bodyParser.json())
-
-const sequelize = new Sequelize(dburl);
+app.use(bodyParser.json());
+console.log(process.env.DB_URL);
+const sequelize = new Sequelize(process.env.DB_URL);
 
 const GrowthNote = sequelize.define('growth_note', {
   id: {
