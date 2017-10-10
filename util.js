@@ -10,9 +10,8 @@ const toHtml = (practises)=> {
   })
 }
 
-const toPdf = (practises, done)=> {
+const toPdf = (html, done)=> {
   const options = { format: 'A4', border: '1cm', };
-  const html = toHtml(practises);
   pdf.create(html, options).toStream(done);
 }
 

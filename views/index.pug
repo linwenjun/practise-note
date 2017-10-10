@@ -1,0 +1,9 @@
+html
+  head
+    title= title
+  body
+    h1= now
+    div
+      each value in practise
+        p
+          pre #{value['subject']}(#{value['id']}): #{value['description']}

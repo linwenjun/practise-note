@@ -1,6 +1,9 @@
+const path = require('path');
 const Sequelize = require('sequelize');
 const express = require('express');
 const bodyParser = require('body-parser')
+const moment = require('moment')
+
 require('dotenv').config()
 
 const app = express();
@@ -8,6 +11,9 @@ const util = require('./util');
 app.use(bodyParser.json());
 console.log(process.env.DB_URL);
 const sequelize = new Sequelize(process.env.DB_URL);
+
+app.set('view engine', 'pug')
+app.set("views", path.join(__dirname, "views"));
 
 const GrowthNote = sequelize.define('growth_note', {
   id: {
@@ -31,11 +37,11 @@ const GrowthNote = sequelize.define('growth_note', {
 app.get('/', (req, res)=> {
   GrowthNote.findAll()
   .then(items=> {
-    res.send(items[0]);
+    res.send(items);
   })
 })
 
-app.post('/growth-note', (req, res)=> {
+app.post('/growth-notes', (req, res)=> {
   const {
     field_1:owner,
     field_2:subject,
@@ -49,16 +55,28 @@ app.post('/growth-note', (req, res)=> {
     })
 })
 
-app.get('/growth-note/pdf', (req, res)=> {
-  GrowthNote.findAll()
-    .then(items=> {
-      const practise = items.map(item=> item.get({plain: true}));
-      util.toPdf(practise, (err, stream)=> {
-        res.setHeader("content-type", "application/pdf");
-        stream.pipe(res);
-      })
-    })
+app.get('/growth-notes/html', (req, res)=> {
+  renderToHtml((err, html)=> {
+    res.send(html);
+  })
 })
+
+app.get('/growth-notes/pdf', (req, res)=> {
+  renderToHtml((err, html)=> {
+    util.toPdf(html, (err, stream)=> {
+      res.setHeader("content-type", "application/pdf");
+      stream.pipe(res);
+    })
+  })
+})
+
+const renderToHtml = (callBack)=> {
+  GrowthNote.findAll().then(items=> {
+    const practise = items.map(item=> item.get({plain: true}));
+    const now = moment().format('ll');
+    app.render('index', {practise, now}, callBack);
+  })
+}
 
 const server = app.listen(3333, (err)=> {
   console.log(`server started at http://localhost:3333`)
