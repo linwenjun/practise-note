@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const express = require('express');
 const bodyParser = require('body-parser')
 const moment = require('moment')
+const Op = Sequelize.Op;
 
 require('dotenv').config()
 
@@ -56,13 +57,15 @@ app.post('/growth-notes', (req, res)=> {
 })
 
 app.get('/growth-notes/html', (req, res)=> {
-  renderToHtml((err, html)=> {
+  const startAt = parseInt(req.query.startAt) || 0;
+  renderToHtml({startAt}, (err, html)=> {
     res.send(html);
   })
 })
 
 app.get('/growth-notes/pdf', (req, res)=> {
-  renderToHtml((err, html)=> {
+  const startAt = parseInt(req.query.startAt) || 0;
+  renderToHtml({startAt}, (err, html)=> {
     util.toPdf(html, (err, stream)=> {
       res.setHeader("content-type", "application/pdf");
       stream.pipe(res);
@@ -70,8 +73,14 @@ app.get('/growth-notes/pdf', (req, res)=> {
   })
 })
 
-const renderToHtml = (callBack)=> {
-  GrowthNote.findAll().then(items=> {
+const renderToHtml = (param, callBack)=> {
+  GrowthNote.findAll({
+    where: {
+      id: {
+        [Op.gt]: param.startAt
+      }
+    }
+  }).then(items=> {
     const practise = items.map(item=> item.get({plain: true}));
     const now = moment().format('ll');
     app.render('index', {practise, now}, callBack);
