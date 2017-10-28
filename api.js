@@ -76,7 +76,7 @@ app.get('/growth-notes/pdf', (req, res)=> {
 const renderToHtml = ({startAt, subject}, callBack)=> {
   let condition = {where: {}}
   if(startAt) {
-    condition.where.id = { [Op.gt]: param.startAt}
+    condition.where.id = { [Op.gt]: startAt}
   }
   if(subject) {
     condition.where.subject = subject
