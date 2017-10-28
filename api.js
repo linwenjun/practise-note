@@ -57,15 +57,15 @@ app.post('/growth-notes', (req, res)=> {
 })
 
 app.get('/growth-notes/html', (req, res)=> {
-  const startAt = parseInt(req.query.startAt) || 0;
-  renderToHtml({startAt}, (err, html)=> {
+  const {startAt = 0, subject} = req.query
+  renderToHtml({startAt,subject}, (err, html)=> {
     res.send(html);
   })
 })
 
 app.get('/growth-notes/pdf', (req, res)=> {
-  const startAt = parseInt(req.query.startAt) || 0;
-  renderToHtml({startAt}, (err, html)=> {
+  const {startAt = 0, subject} = req.query
+  renderToHtml({startAt,subject}, (err, html)=> {
     util.toPdf(html, (err, stream)=> {
       res.setHeader("content-type", "application/pdf");
       stream.pipe(res);
@@ -73,14 +73,15 @@ app.get('/growth-notes/pdf', (req, res)=> {
   })
 })
 
-const renderToHtml = (param, callBack)=> {
-  GrowthNote.findAll({
-    where: {
-      id: {
-        [Op.gt]: param.startAt
-      }
-    }
-  }).then(items=> {
+const renderToHtml = ({startAt, subject}, callBack)=> {
+  let condition = {where: {}}
+  if(startAt) {
+    condition.where.id = { [Op.gt]: param.startAt}
+  }
+  if(subject) {
+    condition.where.subject = subject
+  }
+  GrowthNote.findAll(condition).then(items=> {
     const practise = items.map(item=> item.get({plain: true}));
     const now = moment().format('ll');
     app.render('index', {practise, now}, callBack);
