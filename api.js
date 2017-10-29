@@ -4,36 +4,18 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const moment = require('moment')
 const Op = Sequelize.Op;
+const models = require('./models');
 
 require('dotenv').config()
 
 const app = express();
 const util = require('./util');
 app.use(bodyParser.json());
-console.log(process.env.DB_URL);
-const sequelize = new Sequelize(process.env.DB_URL);
 
 app.set('view engine', 'pug')
 app.set("views", path.join(__dirname, "views"));
 
-const GrowthNote = sequelize.define('growth_note', {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true
-  },
-  owner: {
-    type: Sequelize.STRING
-  },
-  subject: {
-    type: Sequelize.STRING
-  },
-  description: {
-    type: Sequelize.STRING
-  }
-}, {
-  freezeTableName: true,
-  timestamps: false
-});
+const GrowthNote = models['growth_note']
 
 app.get('/', (req, res)=> {
   GrowthNote.findAll()
@@ -46,9 +28,10 @@ app.post('/growth-notes', (req, res)=> {
   const {
     field_1:owner,
     field_2:subject,
-    field_3:description
+    field_3:description,
+    field_4:answerLineCount
   } = req.body.entry
-  GrowthNote.create({owner, subject, description})
+  GrowthNote.create({owner, subject, description, answerLineCount})
     .then((growthNote)=> {
       res.send(growthNote.get({
         plain: true

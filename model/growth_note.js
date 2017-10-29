@@ -1,3 +1,0 @@
-class GrowthNote {
-  save()
-}

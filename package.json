@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon api.js",
+    "migrate": "sequelize db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -20,6 +21,7 @@
     "mysql2": "^1.4.2",
     "pug": "^2.0.0-rc.4",
     "sequelize": "^4.13.5",
+    "sequelize-cli": "^3.0.0",
     "xlsx": "^0.11.5"
   },
   "devDependencies": {
