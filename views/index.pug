@@ -1,11 +1,14 @@
 html
-  head
-    title= title
-  body
-    h1 改错纸
-    h3 姓名: 林梓欣 时间:#{now} 
-    div
-      each value in practise
-        p
-          pre(style="white-space: pre-wrap;") #{value['subject']}(#{value['id']}): #{value['description']}
-        br
+    head
+        title= title
+    body
+        h1 改错纸
+        h3 姓名: 林梓欣 时间:#{now}
+        div
+            each value in practise
+                p
+                    pre(style="white-space: pre-wrap;") #{value['subject']}(#{value['id']}): #{value['description']}
+                    - var n = 3; count=parseInt(value['answerLineCount'], 10) || 0
+                    while n < count
+                        - n++
+                        div &nbsp;
